@@ -1,8 +1,9 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+	"net/url"
 	"simple2gis/intenal/sqlite"
 	"strings"
 )
@@ -10,10 +11,9 @@ import (
 //Получение всех организаций в здании
 func (s *HTTPServer) house(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	fmt.Println(r.URL)
-	httpArgs := s.agregator(r.Form)
+	log.Println(r.URL)
 
-	geo := strings.Split(httpArgs["geo"], "/")
+	geo := strings.Split(url.Values.Get(r.Form, "geo"), ",")
 
-	sqlite.GetHouse(w, httpArgs["addr"], geo[0], geo[1])
+	sqlite.GetHouse(w, url.Values.Get(r.Form, "addr"), geo[0], geo[1])
 }

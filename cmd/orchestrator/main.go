@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
+	"log"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -46,7 +46,7 @@ func RunOrchestrator(cmd *cobra.Command, args []string) {
 	wg.Add(3)
 	go func() {
 		defer wg.Done()
-		fmt.Println("HTTP Server starting")
+		log.Println("HTTP Server starting")
 		addr, _ := cmd.Flags().GetString("http")
 		httpServer = server.NewServer(addr)
 		httpServer.Start()
@@ -59,9 +59,9 @@ func RunOrchestrator(cmd *cobra.Command, args []string) {
 		defer wg.Done()
 		<-sign
 		httpServer.GraceShutdown()
-		fmt.Println("HTTP Shutdown")
+		log.Println("HTTP Shutdown")
 		sqlite.DBClient.DisableConnect()
-		fmt.Println("DB Connection is closed")
+		log.Println("DB Connection is closed")
 	}()
 
 	wg.Wait()

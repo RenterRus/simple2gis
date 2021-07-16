@@ -2,8 +2,8 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"log"
 )
 
 //Получение коннекта к DB (SQLite)
@@ -29,24 +29,24 @@ func DBProc() {
 	for {
 		t := <-queue
 		if t.Another.addr != "" {
-			fmt.Println("Another")
+			log.Println("Another")
 		}
 		if t.House.addr != "" {
-			fmt.Println("House")
+			log.Println("House")
 			t.House.f(GetOrgByHouse(DBClient.DBConnection, t.House.addr, t.House.x+"/"+t.House.y))
 		}
 		if t.Organization.id != "" {
-			fmt.Println("Organization")
+			log.Println("Organization")
 
 			t.Organization.f(GetOrganizationFromDB(DBClient.DBConnection, t.Organization.id))
 		}
 		if t.Category.cat != nil {
-			fmt.Println("Category")
+			log.Println("Category")
 
 			t.Category.f(GetOrgByCategory(DBClient.DBConnection, t.Category.cat))
 		}
 		if t.AddHouse.name != "" {
-			fmt.Println("AddHouse")
+			log.Println("AddHouse")
 			res, err := ProcAddHouse(DBClient.DBConnection, t.AddHouse.name, t.AddHouse.houseAddr, t.AddHouse.houseGeoX,
 				t.AddHouse.houseGeoY, t.AddHouse.numbers, t.AddHouse.category)
 			t.AddHouse.f(addInfo{

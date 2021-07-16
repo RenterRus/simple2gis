@@ -1,8 +1,9 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+	"net/url"
 	"simple2gis/intenal/sqlite"
 	"strings"
 )
@@ -10,8 +11,6 @@ import (
 //Получает организации по категории
 func (s *HTTPServer) category(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	fmt.Println(r.URL)
-	httpArgs := s.agregator(r.Form)
-
-	sqlite.GetCategory(w, strings.Split(httpArgs["category"], "/"))
+	log.Println(r.URL)
+	sqlite.GetCategory(w, strings.Split(url.Values.Get(r.Form, "category"), ","))
 }

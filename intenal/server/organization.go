@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"simple2gis/intenal/sqlite"
 )
@@ -9,10 +9,9 @@ import (
 //Получение организации по ID
 func (s *HTTPServer) organization(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	fmt.Println(r.URL)
-	httpArgs := s.agregator(r.Form)
+	log.Println(r.URL)
 
-	id, err := CheckID(httpArgs["id"])
+	id, err := CheckID(r.Form.Get("id"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))

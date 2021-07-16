@@ -2,10 +2,8 @@ package server
 
 import (
 	"errors"
-	"net/url"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 //Склад непрофильных функций и переменных
@@ -16,14 +14,6 @@ func CheckID(id string) (string, error) {
 		return "", errors.New("ID is invalid")
 	}
 	return id, nil
-}
-
-func (s *HTTPServer) agregator(form url.Values) map[string]string {
-	httpArgs := map[string]string{}
-	for k, v := range form {
-		httpArgs[k] = strings.Join(v, "")
-	}
-	return httpArgs
 }
 
 func checkTelnum(telnum string) (string, error) {

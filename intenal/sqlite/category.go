@@ -3,7 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -56,7 +56,7 @@ func GetOrgByCategory(DBConnection *sql.DB, category []string) ([]orgInfo, error
 			t := catId{}
 			err := result.Scan(&t.ID)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				continue
 			}
 			catIDs = append(catIDs, t.ID)
@@ -64,18 +64,18 @@ func GetOrgByCategory(DBConnection *sql.DB, category []string) ([]orgInfo, error
 	}
 
 	//Org
-	Org, err := DBConnection.Query("select ID from 'organization' where CatIDs like '%" + strings.Join(catIDs, "/") + "%'")
+	org, err := DBConnection.Query("select ID from 'organization' where CatIDs like '%" + strings.Join(catIDs, "/") + "%'")
 	if err != nil {
 		return nil, err
 	}
 
 	var orgBuf []orgID
 
-	for Org.Next() {
+	for org.Next() {
 		t := orgID{}
-		err := Org.Scan(&t.ID)
+		err := org.Scan(&t.ID)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 		orgBuf = append(orgBuf, t)
@@ -84,12 +84,12 @@ func GetOrgByCategory(DBConnection *sql.DB, category []string) ([]orgInfo, error
 	//Result
 	result := []orgInfo{}
 	for _, v := range orgBuf {
-		org, err := GetOrganizationFromDB(DBConnection, v.ID)
+		orgs, err := GetOrganizationFromDB(DBConnection, v.ID)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			continue
 		}
-		result = append(result, org)
+		result = append(result, orgs)
 	}
 
 	return result, nil

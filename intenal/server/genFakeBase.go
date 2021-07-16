@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"simple2gis/intenal/sqlite"
@@ -47,10 +48,9 @@ func genCat() []string {
 //Какой-то хитрой логики тут нет, так что генерируемые данные не шипко обладают смыслом
 func (s *HTTPServer) genFakeBase(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	fmt.Println(r.URL)
-	httpArgs := s.agregator(r.Form)
+	log.Println(r.URL)
 
-	number, err := strconv.Atoi(httpArgs["number"])
+	number, err := strconv.Atoi(r.Form.Get("number"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))

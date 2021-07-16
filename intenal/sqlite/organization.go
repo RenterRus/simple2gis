@@ -3,7 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -41,17 +41,17 @@ func GetOrganization(w http.ResponseWriter, id string) {
 
 //Выполняет запрос, когда дойдет очередь
 func getOrgByID(DBConnection *sql.DB, id string) (GetOrgInfo, error) {
-	Org, err := DBConnection.Query("select ID, Name, CatIDs, houseID from 'organization' where (ID = '" + id + "')")
+	org, err := DBConnection.Query("select ID, Name, CatIDs, houseID from 'organization' where (ID = '" + id + "')")
 	if err != nil {
 		return GetOrgInfo{}, err
 	}
 
 	var result GetOrgInfo
 
-	for Org.Next() {
-		err := Org.Scan(&result.Id, &result.Name, &result.CatIDs, &result.HouseID)
+	for org.Next() {
+		err := org.Scan(&result.Id, &result.Name, &result.CatIDs, &result.HouseID)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 	}
@@ -59,17 +59,17 @@ func getOrgByID(DBConnection *sql.DB, id string) (GetOrgInfo, error) {
 }
 
 func getHouseByOrgInfo(DBConnection *sql.DB, orgBuf GetOrgInfo) (GetHouseInfo, error) {
-	HouseReq, err := DBConnection.Query("select ID, Address, Geo from 'house' where (ID = '" + orgBuf.HouseID + "')")
+	houseReq, err := DBConnection.Query("select ID, Address, Geo from 'house' where (ID = '" + orgBuf.HouseID + "')")
 	if err != nil {
 		return GetHouseInfo{}, err
 	}
 
 	var result GetHouseInfo
 
-	for HouseReq.Next() {
-		err := HouseReq.Scan(&result.Id, &result.Address, &result.Geo)
+	for houseReq.Next() {
+		err := houseReq.Scan(&result.Id, &result.Address, &result.Geo)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 	}
@@ -77,18 +77,18 @@ func getHouseByOrgInfo(DBConnection *sql.DB, orgBuf GetOrgInfo) (GetHouseInfo, e
 }
 
 func getNumberByOrgId(DBConnection *sql.DB, orgID string) ([]string, error) {
-	NumberReq, err := DBConnection.Query("select Number from 'number' where (organization_id = '" + orgID + "')")
+	numberReq, err := DBConnection.Query("select Number from 'number' where (organization_id = '" + orgID + "')")
 	if err != nil {
 		return nil, err
 	}
 
 	var result []string
 
-	for NumberReq.Next() {
+	for numberReq.Next() {
 		t := GetNumberInfo{}
-		err := NumberReq.Scan(&t.Telnum)
+		err := numberReq.Scan(&t.Telnum)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 		result = append(result, t.Telnum)
@@ -100,9 +100,9 @@ func getIDCategorybyCategory(DBConnection *sql.DB, catID string) []string {
 	var result []string
 
 	for _, v := range strings.Split(catID, "/") {
-		CategoryReq := DBConnection.QueryRow("select category from 'category' where (ID = " + v + ")")
+		categoryReq := DBConnection.QueryRow("select category from 'category' where (ID = " + v + ")")
 		t := GetCategoryInfo{}
-		CategoryReq.Scan(&t.Category)
+		categoryReq.Scan(&t.Category)
 		result = append(result, t.Category)
 	}
 	return result

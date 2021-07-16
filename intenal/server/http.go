@@ -28,7 +28,7 @@ func (s *HTTPServer) Start() error {
 	mux.HandleFunc("/house", s.house)
 	mux.HandleFunc("/category", s.category)
 	mux.HandleFunc("/organization", s.organization)
-	mux.HandleFunc("/addHouse", s.addHouse)
+	mux.HandleFunc("/newOrganization", s.newOrganization)
 	mux.HandleFunc("/genFakeBase", s.genFakeBase)
 	s.s.Handler = mux
 	return s.s.ListenAndServe()
