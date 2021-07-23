@@ -47,7 +47,7 @@ type catId struct {
 func GetOrgByCategory(DBConnection *sql.DB, category []string) ([]orgInfo, error) {
 	var catIDs []string
 	for _, v := range category {
-		result, err := DBConnection.Query("select ID from 'category' where (category = '" + v + "')")
+		result, err := DBConnection.Query("select ID from 'category' where (category = ?)", v)
 		if err != nil {
 			return nil, err
 		}
@@ -64,7 +64,7 @@ func GetOrgByCategory(DBConnection *sql.DB, category []string) ([]orgInfo, error
 	}
 
 	//Org
-	org, err := DBConnection.Query("select ID from 'organization' where CatIDs like '%" + strings.Join(catIDs, "/") + "%'")
+	org, err := DBConnection.Query("select ID from 'organization' where CatIDs like %?%", strings.Join(catIDs, "/"))
 	if err != nil {
 		return nil, err
 	}

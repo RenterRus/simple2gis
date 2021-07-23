@@ -77,7 +77,7 @@ func getHouseByOrgInfo(DBConnection *sql.DB, orgBuf GetOrgInfo) (GetHouseInfo, e
 }
 
 func getNumberByOrgId(DBConnection *sql.DB, orgID string) ([]string, error) {
-	numberReq, err := DBConnection.Query("select Number from 'number' where (organization_id = '" + orgID + "')")
+	numberReq, err := DBConnection.Query("select Number from 'number' where (organization_id = ?)", orgID)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func getIDCategorybyCategory(DBConnection *sql.DB, catID string) []string {
 	var result []string
 
 	for _, v := range strings.Split(catID, "/") {
-		categoryReq := DBConnection.QueryRow("select category from 'category' where (ID = " + v + ")")
+		categoryReq := DBConnection.QueryRow("select category from 'category' where (ID = ?)", v)
 		t := GetCategoryInfo{}
 		categoryReq.Scan(&t.Category)
 		result = append(result, t.Category)

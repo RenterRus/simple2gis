@@ -22,6 +22,8 @@ var rootCmd = &cobra.Command{
 	Run: RunOrchestrator,
 }
 
+var c = make(chan int)
+
 func init() {
 	rootCmd.PersistentFlags().String("http", "127.0.0.1:9999", "HTTP Server addr")
 	rootCmd.PersistentFlags().String("db", "guidebook", "DB name")
@@ -32,6 +34,7 @@ func init() {
 func main() {
 
 }
+
 
 // RunOrchestrator Инициализация HTTP сервера, установка соединения с БД и красивое завершение работы
 func RunOrchestrator(cmd *cobra.Command, args []string) {

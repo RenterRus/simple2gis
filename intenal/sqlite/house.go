@@ -52,7 +52,7 @@ func GetOrgByHouse(DBConnection *sql.DB, Addr, Geo string) ([]orgInfo, error) {
 	}
 
 	//Org
-	org, err := DBConnection.Query("select ID from 'organization' where (houseID = '" + strconv.Itoa(idH) + "')")
+	org, err := DBConnection.Query("select ID from 'organization' where (houseID = ?)", strconv.Itoa(idH))
 	if err != nil {
 		return nil, err
 	}

@@ -57,7 +57,7 @@ type housesID struct {
 }
 
 func GetHouseID(DBConnection *sql.DB, address, geo string) (int, error) {
-	result, err := DBConnection.Query("select ID from house where (Address = '" + address + "' AND Geo = '" + geo + "')")
+	result, err := DBConnection.Query("select ID from house where (Address = ? AND Geo = ?)", address, geo)
 	if err != nil {
 		return -2, err
 	}
@@ -84,7 +84,7 @@ func GetHouseID(DBConnection *sql.DB, address, geo string) (int, error) {
 }
 
 func AddHouseToDB(DBConnection *sql.DB, address, geo string) (int, error) {
-	res, err := DBConnection.Exec("insert into 'house' (Address, Geo) VALUES ('" + address + "', '" + geo + "')")
+	res, err := DBConnection.Exec("insert into 'house' (Address, Geo) VALUES (?, ?)", address, geo)
 	if err != nil {
 		return -1, err
 	}
@@ -97,7 +97,7 @@ func AddHouseToDB(DBConnection *sql.DB, address, geo string) (int, error) {
 
 func AddNumbersToDB(DBConnection *sql.DB, numbers []string, organizationID int) error {
 	for _, v := range numbers {
-		_, err := DBConnection.Exec("insert into 'number' (Number, organization_id) VALUES ('" + v + "', '" + strconv.Itoa(organizationID) + "')")
+		_, err := DBConnection.Exec("insert into 'number' (Number, organization_id) VALUES (?, ?)", v, strconv.Itoa(organizationID))
 		if err != nil {
 			return err
 		}
@@ -107,7 +107,7 @@ func AddNumbersToDB(DBConnection *sql.DB, numbers []string, organizationID int) 
 }
 
 func GetRootCategoryFromDB(DBConnection *sql.DB, cat string, rootID int) (int, error) {
-	result, err := DBConnection.Query("select ID from 'category' where (category = '" + cat + "' and RootID = '" + strconv.Itoa(rootID) + "')")
+	result, err := DBConnection.Query("select ID from 'category' where (category = ? and RootID = ?)", cat, strconv.Itoa(rootID))
 	if err != nil {
 		return -2, err
 	}
@@ -126,7 +126,7 @@ func GetRootCategoryFromDB(DBConnection *sql.DB, cat string, rootID int) (int, e
 	if len(houses) > 0 {
 		return strconv.Atoi(houses[0])
 	}
-	res, err := DBConnection.Exec("insert into 'category' (category, RootID) VALUES ('" + cat + "', '" + strconv.Itoa(rootID) + "')")
+	res, err := DBConnection.Exec("insert into 'category' (category, RootID) VALUES (?, ?)", cat, strconv.Itoa(rootID))
 	if err != nil {
 		return -3, err
 	}
@@ -153,7 +153,7 @@ func AddCategoryToDB(DBConnection *sql.DB, cats []string) ([]string, error) {
 }
 
 func AddOrganizationToDB(DBConnection *sql.DB, name, catIDs string, houseID int) (int, error) {
-	res, err := DBConnection.Exec("insert into 'organization' (Name, CatIDs, houseID) VALUES ('" + name + "', '" + catIDs + "', '" + strconv.Itoa(houseID) + "')")
+	res, err := DBConnection.Exec("insert into 'organization' (Name, CatIDs, houseID) VALUES (?, ?, ?)", name, catIDs, strconv.Itoa(houseID))
 	if err != nil {
 		return -1, err
 	}
@@ -172,7 +172,7 @@ type houseID struct {
 }
 
 func checkDouble(DBConnection *sql.DB, name, houseAddr, houseGeoX, houseGeoY string) bool {
-	result, err := DBConnection.Query("select houseID from 'organization' where (Name = '" + name + "')")
+	result, err := DBConnection.Query("select houseID from 'organization' where (Name = ?)", name)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -189,7 +189,7 @@ func checkDouble(DBConnection *sql.DB, name, houseAddr, houseGeoX, houseGeoY str
 	}
 	answer := false
 	for _, v := range orgs {
-		result, _ = DBConnection.Query("select Address, Geo from 'house' where (ID = '" + v.ID + "')")
+		result, _ = DBConnection.Query("select Address, Geo from 'house' where (ID = ?)", v.ID)
 
 		for result.Next() {
 			t := houseID{}
