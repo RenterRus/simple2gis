@@ -2,14 +2,8 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"log"
 	"math/rand"
-	"os"
-	"os/signal"
-	"simple2gis/intenal/server"
-	"simple2gis/intenal/sqlite"
-	"sync"
-	"syscall"
+	"simple2gis/intenal/orchestrator"
 	"time"
 )
 
@@ -19,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Short: "Root command",
 	Long: "This command is the main one, that is, it is entered as an entry point to the CLI application, for example, " +
 		"as the main command in Git (git merge..., git pull..., etc)",
-	Run: RunOrchestrator,
+	Run: orchestrator.RunOrchestrator,
 }
 
 var c = make(chan int)
@@ -33,39 +27,4 @@ func init() {
 
 func main() {
 
-}
-
-
-// RunOrchestrator Инициализация HTTP сервера, установка соединения с БД и красивое завершение работы
-func RunOrchestrator(cmd *cobra.Command, args []string) {
-	var wg sync.WaitGroup
-	sign := make(chan os.Signal, 1)
-	signal.Notify(sign, syscall.SIGINT, syscall.SIGTERM)
-	dbname, _ := cmd.Flags().GetString("db")
-
-	var httpServer *server.HTTPServer
-
-	sqlite.DBClient = sqlite.Initial(dbname)
-	wg.Add(3)
-	go func() {
-		defer wg.Done()
-		log.Println("HTTP Server starting")
-		addr, _ := cmd.Flags().GetString("http")
-		httpServer = server.NewServer(addr)
-		httpServer.Start()
-	}()
-	go func() {
-		defer wg.Done()
-		go sqlite.DBProc()
-	}()
-	go func() {
-		defer wg.Done()
-		<-sign
-		httpServer.GraceShutdown()
-		log.Println("HTTP Shutdown")
-		sqlite.DBClient.DisableConnect()
-		log.Println("DB Connection is closed")
-	}()
-
-	wg.Wait()
 }
